@@ -1,6 +1,5 @@
-// Copyright 2022-2024 Niantic.
-
 using Niantic.Lightship.AR.Samples;
+using System.Diagnostics;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -30,10 +29,9 @@ namespace Scenes.SharedAR.VpsColocalization
 
         public override void OnNetworkDespawn()
         {
-            //
             if (OwnerClientId == NetworkManager.ServerClientId)
             {
-                Debug.Log("Host disconnected!!");
+                UnityEngine.Debug.Log("Host disconnected!!");
                 if (VpsColocalizationDemo.Instance)
                 {
                     VpsColocalizationDemo.Instance.HandleHostDisconnected();
@@ -41,21 +39,21 @@ namespace Scenes.SharedAR.VpsColocalization
             }
             base.OnNetworkDespawn();
         }
+
         void Update()
         {
             if (IsOwner)
             {
                 if (_arCameraTransform)
                 {
-                    // Get local AR camera transform
-                    _arCameraTransform.GetPositionAndRotation( out var pos,  out var rot);
-                    // Since using the ClientNetworkTransform, just update world transform of the cube matching with the
-                    // AR Camera's worldTransform. it's local transform will be synced.
-                    transform.SetPositionAndRotation(pos ,rot);
-                }
+                    // Get local AR camera transform position and rotation
+                    Vector3 pos = _arCameraTransform.position; // Correctly access the position
+                    Quaternion rot = _arCameraTransform.rotation; // Correctly access the rotation
 
+                    // Update world transform of the object to match the AR Camera's worldTransform
+                    transform.SetPositionAndRotation(pos, rot);
+                }
             }
         }
     }
-
 }
